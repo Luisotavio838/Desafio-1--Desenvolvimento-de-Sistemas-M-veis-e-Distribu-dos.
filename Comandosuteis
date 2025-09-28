@@ -1,0 +1,9 @@
+flutter create fast_location
+cd fast_location
+
+# Adicione as dependências no pubspec e rode:
+flutter pub get
+
+# Para gerar os adapters do Hive e as stores do MobX:
+flutter pub run build_runner build --delete-conflicting-outputs
+# (durante desenvolvimento, use `watch` se quiser)
