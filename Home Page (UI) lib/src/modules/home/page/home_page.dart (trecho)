@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import '../controller/home_controller.dart';
+import '../components/last_address_widget.dart';
+import '../components/address_list_widget.dart';
+import '../components/empty_search_widget.dart';
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late final HomeController controller;
+
+  final cepController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // injeção simples (você pode usar provider/get_it)
+    final viacep = ViacepRepository();
+    final local = LocalRepository();
+    final service = HomeService(viacepRepository: viacep, localRepository: local);
+    controller = HomeController(service: service);
+    controller.loadHistory();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('FastLocation')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              controller: cepController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'CEP',
+                hintText: '00000-000',
+              ),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () => controller.searchByCep(cepController.text),
+              child: const Text('Pesquisar CEP'),
+            ),
+            const SizedBox(height: 12),
+            Observer(builder: (_) {
+              if (controller.loading) return const CircularProgressIndicator();
+              if (controller.error.isNotEmpty) {
+                return Text(controller.error, style: const TextStyle(color: Colors.red));
+              }
+              if (controller.currentAddress != null) {
+                return LastAddressWidget(address: controller.currentAddress!);
+              }
+              if (controller.history.isEmpty) {
+                return const EmptySearchWidget();
+              }
+              return Expanded(child: AddressListWidget(items: controller.history.toList()));
+            }),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, '/history'),
+        child: const Icon(Icons.history),
+      ),
+    );
+  }
+}
