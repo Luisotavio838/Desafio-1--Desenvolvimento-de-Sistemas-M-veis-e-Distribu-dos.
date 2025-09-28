@@ -1,0 +1,26 @@
+lib/
+├─ main.dart
+├─ src/
+│  ├─ shared/
+│  │  ├─ colors/app_colors.dart
+│  │  ├─ components/* (botões, text fields, loading)
+│  │  ├─ metrics/app_metrics.dart
+│  │  └─ storage/hive_storage.dart
+│  ├─ http/
+│  │  └─ dio_client.dart
+│  ├─ routes/app_routes.dart
+│  ├─ modules/
+│  │  ├─ initial/page/initial_page.dart
+│  │  ├─ home/
+│  │  │  ├─ model/address_model.dart
+│  │  │  ├─ repositories/viacep_repository.dart
+│  │  │  ├─ repositories/local_repository.dart
+│  │  │  ├─ service/home_service.dart
+│  │  │  ├─ controller/home_controller.dart
+│  │  │  ├─ components/last_address_widget.dart
+│  │  │  ├─ components/address_list_widget.dart
+│  │  │  ├─ components/empty_search_widget.dart
+│  │  │  └─ page/home_page.dart
+│  │  └─ history/
+│  │     ├─ controller/history_controller.dart
+│  │     └─ page/history_page.dart
