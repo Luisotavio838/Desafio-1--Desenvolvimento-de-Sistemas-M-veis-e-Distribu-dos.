@@ -1,0 +1,41 @@
+import 'package:flutter/material.dart';
+import 'package:map_launcher/map_launcher.dart';
+import '../model/address_model.dart';
+
+class LastAddressWidget extends StatelessWidget {
+  final AddressModel address;
+  const LastAddressWidget({super.key, required this.address});
+
+  @override
+  Widget build(BuildContext context) {
+    final title = '${address.logradouro}, ${address.bairro} - ${address.localidade}/${address.uf}';
+    return Card(
+      child: ListTile(
+        title: Text(title),
+        subtitle: Text('CEP: ${address.cep}'),
+        trailing: IconButton(
+          icon: const Icon(Icons.directions),
+          onPressed: () async {
+            // Geocode o endereço para coordenadas usando geocoding
+            try {
+              final query = '${address.logradouro}, ${address.localidade}, ${address.uf}, ${address.cep}';
+              final locations = await locationFromAddress(query);
+              if (locations.isNotEmpty) {
+                final loc = locations.first;
+                final availableMaps = await MapLauncher.installedMaps;
+                if (availableMaps.isNotEmpty) {
+                  await availableMaps.first.showMarker(
+                    coords: Coords(loc.latitude, loc.longitude),
+                    title: title,
+                  );
+                }
+              }
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erro ao traçar rota')));
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
