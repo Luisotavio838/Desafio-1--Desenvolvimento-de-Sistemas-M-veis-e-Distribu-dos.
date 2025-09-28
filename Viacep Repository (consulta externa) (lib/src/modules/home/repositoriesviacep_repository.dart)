@@ -1,0 +1,35 @@
+import 'package:dio/dio.dart';
+import '../../model/address_model.dart';
+import '../../../http/dio_client.dart';
+
+class ViacepRepository {
+  final Dio _dio = DioClient().dio;
+
+  Future<AddressModel?> getAddressByCep(String cep) async {
+    try {
+      final cleanCep = cep.replaceAll(RegExp(r'[^0-9]'), '');
+      final response = await _dio.get('$cleanCep/json/');
+      if (response.statusCode == 200 && response.data != null && response.data['erro'] != true) {
+        return AddressModel.fromJson(response.data);
+      }
+      return null;
+    } on DioError {
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<AddressModel>> searchByAddress(String uf, String city, String street) async {
+    // ViaCEP tem endpoints de busca: /<uf>/<cidade>/<logradouro>/json
+    try {
+      final response = await _dio.get('$uf/$city/$street/json/');
+      if (response.statusCode == 200 && response.data is List) {
+        return (response.data as List).map((e) => AddressModel.fromJson(e)).toList();
+      }
+      return [];
+    } catch (e) {
+      rethrow;
+    }
+  }
+}
